@@ -1,0 +1,52 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# os
+.DS_Store
+Thumbs.db
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# env
+.env
+.env.*
+!.env.example
+
+# tool state (not committed)
+.remember/
+.wazir/
+ideations/
+graphify-out/
+
+# chrome web store packaging
+*.zip
+*.crx
+store-packages/
+local-store-guide/
+
+# browser qa artifacts
+browser-profiles/
+chrome-profiles/
+.chrome-profiles/
+screenshots/
+videos/
+
+# internal docs — kept locally, never committed to the public repo
+/ignore/
+/assets/generated/

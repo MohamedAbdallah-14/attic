@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="640" height="200" fill="none">
+  <g stroke="#6F53FF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M40 108 L100 56 L160 108"/>
+    <path d="M54 100 V164 H146 V100"/>
+    <path d="M86 164 V126 H114 V164"/>
+  </g>
+  <text x="192" y="138" font-family="Inter, system-ui, sans-serif" font-size="96" font-weight="700" fill="#6F53FF" letter-spacing="-3">Attic</text>
+</svg>

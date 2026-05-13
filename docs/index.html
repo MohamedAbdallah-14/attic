@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Attic — Rediscover the links you saved, every time you open a new tab</title>
+    <meta name="description" content="Local-first Chrome extension. Bookmark manager plus a randomized new-tab feed that surfaces things you already decided were worth keeping. No accounts, no cloud, no telemetry." />
+    <link rel="icon" href="brand/mark.png" />
+    <meta property="og:title" content="Attic — Rediscover the links you saved" />
+    <meta property="og:description" content="Local-first Chrome extension. The new tab is a quiet, randomized feed of bookmarks you already kept." />
+    <meta property="og:image" content="brand/og.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      :root {
+        --indigo: #6f53ff;
+        --indigo-dark: #5f43d6;
+        --indigo-deep: #4a35a8;
+        --ink: #08111d;
+        --ink-soft: #1a2536;
+        --paper: #f4f7fb;
+        --cream: #fff8ee;
+        --line: #e2e8f0;
+        --muted: #475569;
+        --amber: #f2a93b;
+        --emerald: #22c1a0;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        color: var(--ink);
+        background: var(--paper);
+        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--indigo-dark); text-decoration: none; }
+      a:hover { color: var(--indigo); }
+
+      /* Nav */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: saturate(140%) blur(8px);
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--indigo);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .nav-links a {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 22px;
+      }
+      .nav-links a:hover { color: var(--ink); }
+      .nav-cta {
+        background: var(--indigo);
+        color: #ffffff !important;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+      }
+      .nav-cta:hover { background: var(--indigo-dark); color: #ffffff !important; }
+
+      /* Hero */
+      .hero {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 88px 24px 64px;
+        text-align: center;
+      }
+      .hero-eyebrow {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--indigo-dark);
+        background: rgba(111, 83, 255, 0.1);
+        padding: 6px 14px;
+        border-radius: 999px;
+        margin-bottom: 24px;
+      }
+      .hero h1 {
+        font-size: 56px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        margin: 0 0 24px;
+      }
+      .hero h1 .accent { color: var(--indigo); }
+      .hero p {
+        font-size: 19px;
+        color: var(--muted);
+        max-width: 620px;
+        margin: 0 auto 32px;
+      }
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--indigo);
+        color: #ffffff !important;
+        padding: 14px 28px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .hero-cta:hover { background: var(--indigo-dark); }
+      .hero-meta {
+        margin-top: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .hero-meta a { color: var(--muted); border-bottom: 1px solid var(--line); }
+      .hero-meta a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+      /* Why */
+      .why {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+        text-align: center;
+      }
+      .why h2 {
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        margin: 0 0 16px;
+      }
+      .why p {
+        font-size: 17px;
+        color: var(--muted);
+        margin: 0 0 12px;
+      }
+
+      /* Features */
+      .features {
+        background: #ffffff;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 80px 24px;
+      }
+      .features-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: grid;
+        gap: 48px;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .feature {
+        text-align: left;
+      }
+      .feature-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(111, 83, 255, 0.12);
+        color: var(--indigo-dark);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 18px;
+      }
+      .feature h3 {
+        font-size: 19px;
+        margin: 0 0 10px;
+        letter-spacing: -0.01em;
+      }
+      .feature p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      @media (max-width: 760px) {
+        .features-inner { grid-template-columns: 1fr; gap: 32px; }
+        .hero h1 { font-size: 38px; }
+        .hero p { font-size: 17px; }
+      }
+
+      /* Capture */
+      .capture {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 80px 24px;
+      }
+      .capture h2 {
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+        text-align: center;
+      }
+      .capture-sub {
+        text-align: center;
+        color: var(--muted);
+        margin: 0 0 40px;
+      }
+      .capture-list {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr 1fr;
+      }
+      .cap-item {
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .cap-item .glyph {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: var(--paper);
+        color: var(--indigo-dark);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+      .cap-item h4 {
+        margin: 0 0 4px;
+        font-size: 15px;
+      }
+      .cap-item p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      @media (max-width: 760px) {
+        .capture-list { grid-template-columns: 1fr; }
+      }
+
+      /* Privacy */
+      .privacy-block {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 80px 24px;
+        text-align: center;
+      }
+      .privacy-block h2 {
+        font-size: 32px;
+        letter-spacing: -0.02em;
+        margin: 0 0 20px;
+        color: #ffffff;
+      }
+      .privacy-block p {
+        max-width: 620px;
+        margin: 0 auto 28px;
+        color: #c5d0dd;
+        font-size: 17px;
+      }
+      .privacy-pills {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+      }
+      .pill {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--paper);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .privacy-block a {
+        color: #ffffff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        font-weight: 500;
+      }
+      .privacy-block a:hover { border-bottom-color: #ffffff; }
+
+      /* Footer */
+      footer {
+        padding: 40px 24px;
+        text-align: center;
+        background: #ffffff;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 14px;
+      }
+      footer a {
+        color: var(--muted);
+        margin: 0 12px;
+      }
+      footer a:hover { color: var(--ink); }
+      .footer-meta {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="./">
+          <span class="brand-mark">A</span>
+          Attic
+        </a>
+        <div class="nav-links">
+          <a href="https://github.com/MohamedAbdallah-14/attic">GitHub</a>
+          <a href="privacy.html">Privacy</a>
+          <a class="nav-cta" href="https://github.com/MohamedAbdallah-14/attic#install-from-source">Install</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <span class="hero-eyebrow">Chrome extension · Local-first</span>
+      <h1>Rediscover the links you saved, <span class="accent">every time you open a new tab</span>.</h1>
+      <p>
+        Attic turns the idle new-tab moment into something useful. A quiet, randomized feed of bookmarks you already decided were worth keeping. No accounts. No cloud. No telemetry.
+      </p>
+      <a class="hero-cta" href="https://github.com/MohamedAbdallah-14/attic#install-from-source">
+        Install from source
+        <span aria-hidden="true">→</span>
+      </a>
+      <p class="hero-meta">
+        Pending Chrome Web Store review. Until then, load unpacked from
+        <a href="https://github.com/MohamedAbdallah-14/attic">the GitHub repository</a>.
+      </p>
+    </section>
+
+    <section class="why">
+      <h2>Bookmarks are not the problem.</h2>
+      <p>Forgetting they exist is.</p>
+      <p>A useful project gets mentioned in a YouTube description. A friend sends a long-form article. You save it. You never see it again.</p>
+    </section>
+
+    <section class="features">
+      <div class="features-inner">
+        <div class="feature">
+          <span class="feature-num">1</span>
+          <h3>Rediscovery feed</h3>
+          <p>The new tab is a weighted-random pick from your saved bookmarks. Recent items boosted. Repeatedly shown items down-weighted. Items you mark done get zero weight.</p>
+        </div>
+        <div class="feature">
+          <span class="feature-num">2</span>
+          <h3>Bookmark manager</h3>
+          <p>Every saved link in one tab. Inline icons per card: edit tags, move to a Chrome folder, delete, star. Tag edits attempt to move the bookmark into the matching Chrome folder.</p>
+        </div>
+        <div class="feature">
+          <span class="feature-num">3</span>
+          <h3>Reading list and Done</h3>
+          <p>A distinct one-time-read pile. Items captured via Attic auto-join. A star toggles membership. Mark done sends to Done. Undo done returns.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="capture">
+      <h2>Five ways to save</h2>
+      <p class="capture-sub">Use whichever surface fits the moment. Everything lands in the same local store.</p>
+      <div class="capture-list">
+        <div class="cap-item">
+          <span class="glyph">A</span>
+          <div>
+            <h4>Toolbar popup</h4>
+            <p>Segmented control picks Reading list or Bookmarks, then save.</p>
+          </div>
+        </div>
+        <div class="cap-item">
+          <span class="glyph">⌘</span>
+          <div>
+            <h4>Keyboard shortcut</h4>
+            <p>Cmd/Ctrl + Shift + S anywhere in Chrome.</p>
+          </div>
+        </div>
+        <div class="cap-item">
+          <span class="glyph">▸</span>
+          <div>
+            <h4>Right-click menu</h4>
+            <p>Save page or Save link from the context menu.</p>
+          </div>
+        </div>
+        <div class="cap-item">
+          <span class="glyph">⇆</span>
+          <div>
+            <h4>Chrome bookmarks sync</h4>
+            <p>Your existing Chrome bookmarks appear automatically. No manual import.</p>
+          </div>
+        </div>
+        <div class="cap-item">
+          <span class="glyph">↥</span>
+          <div>
+            <h4>Pocket import</h4>
+            <p>Drop in your ril_export.html and Attic walks it into IndexedDB.</p>
+          </div>
+        </div>
+        <div class="cap-item">
+          <span class="glyph">!</span>
+          <div>
+            <h4>Ask-mode notifications</h4>
+            <p>Capture defaults to "Ask each time" so every save lets you pick Reading list or Bookmarks via a Chrome notification.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="privacy-block">
+      <h2>Local-first by design.</h2>
+      <p>
+        Every saved URL, every piece of metadata, every image lives in your browser's IndexedDB. The only outbound network requests are metadata fetches to the exact URLs you saved.
+      </p>
+      <div class="privacy-pills">
+        <span class="pill">No account</span>
+        <span class="pill">No telemetry</span>
+        <span class="pill">No analytics</span>
+        <span class="pill">No cloud sync</span>
+        <span class="pill">No "phone home"</span>
+      </div>
+      <p><a href="privacy.html">Read the full privacy policy →</a></p>
+    </section>
+
+    <footer>
+      <div>
+        <a href="https://github.com/MohamedAbdallah-14/attic">Source</a>
+        ·
+        <a href="https://github.com/MohamedAbdallah-14/attic/issues">Issues</a>
+        ·
+        <a href="privacy.html">Privacy</a>
+        ·
+        <a href="https://github.com/MohamedAbdallah-14/attic/blob/main/LICENSE">BSL 1.1 License</a>
+      </div>
+      <div class="footer-meta">Built quietly. Stored locally. Surfaces only what you saved.</div>
+    </footer>
+  </body>
+</html>

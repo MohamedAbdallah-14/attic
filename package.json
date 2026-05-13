@@ -1,7 +1,8 @@
 {
-  "name": "bookmark-reminder",
-  "version": "0.1.0",
+  "name": "attic",
+  "version": "1.0.1",
   "private": true,
+  "license": "BUSL-1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,23 +10,17 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "tsc -b --noEmit"
-  },
-  "dependencies": {
-    "@mozilla/readability": "^0.5.0",
-    "dexie": "^4.0.10",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "2.0.0-beta.29",
     "@tailwindcss/vite": "^4.0.0",
     "@types/chrome": "^0.0.287",
     "@types/node": "^25.6.2",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^2.1.9",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^25.0.1",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.0.0",
@@ -35,6 +30,6 @@
   },
   "packageManager": "pnpm@9.15.0",
   "engines": {
-    "node": ">=22 <23"
+    "node": ">=22"
   }
 }

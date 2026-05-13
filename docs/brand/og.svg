@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <rect width="1200" height="630" fill="#6F53FF"/>
+  <rect x="80" y="140" width="80" height="8" fill="#F4F7FB"/>
+  <text x="80" y="210" fill="#08111D" font-size="72" font-weight="800">Attic</text>
+  <text x="80" y="280" fill="#08111D" opacity="0.75" font-size="28">Rediscover the links you saved, every time you open a new tab.</text>
+</svg>

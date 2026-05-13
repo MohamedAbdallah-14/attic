@@ -1,0 +1,24 @@
+# GitHub Pages config for the Attic site.
+# Source folder is /docs on the main branch. Only index.html, privacy.html, and
+# the referenced brand assets should be served. Everything below is repo-only
+# documentation (audit reports, image prompts, store-form copy, screenshot plan)
+# and is excluded from the published site.
+#
+# Jekyll is enabled by the presence of this file. The hand-written HTML at
+# docs/index.html and docs/privacy.html has no front matter and no Liquid
+# tags, so Jekyll passes it through verbatim.
+
+title: Attic
+description: Local-first Chrome extension. Rediscover the links you saved, every time you open a new tab.
+url: https://mohamedabdallah-14.github.io
+baseurl: /attic
+
+# Don't auto-build a `feed.xml` or other Jekyll defaults.
+plugins: []
+
+exclude:
+  - "*.yml"
+  - "*.yaml"
+
+keep_files:
+  - brand
